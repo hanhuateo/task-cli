@@ -1,11 +1,13 @@
 package main
 
-import "time"
+import (
+	"time"
+)
 
 type Task struct {
-	id          string
-	description string
-	status      string
-	createdAt   time.Time
-	updatedAt   time.Time
+	Id          string    `json:"id"`
+	Description string    `json:"description"`
+	Status      string    `json:"status"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }

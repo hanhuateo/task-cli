@@ -1,6 +1,6 @@
 # planning for task tracker
 
-1. define task struct
+1. define task struct (done)
 2. be able to interact with json files
 3. have different commands
     - add
