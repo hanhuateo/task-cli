@@ -1,3 +1,3 @@
-module github.com/hanhuateo/task-tracker-golang
+module github.com/hanhuateo/task-cli
 
 go 1.26.6
