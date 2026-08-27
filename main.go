@@ -17,32 +17,11 @@ func main() {
 	}
 
 	path := "tasks.json"
-	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
+	file, err := handleFileOpening(path)
 	if err != nil {
-		log.Fatalf("Failed to open or create file: %v", err)
+		log.Fatalf("Failed to open file: %v", err)
 	}
 	defer file.Close()
-
-	stats, err := file.Stat()
-	if err != nil {
-		log.Fatalf("Failed to get file stats: %v", err)
-	}
-
-	if stats.Size() == 0 {
-		fmt.Println("File is empty or just created. Initializing with '[]'...")
-
-		_, err = file.WriteString("{}")
-		if err != nil {
-			log.Fatalf("Failed to write default JSON: %v", err)
-		}
-
-		_, err = file.Seek(0, 0)
-		if err != nil {
-			log.Fatalf("Failed to rewind file cursor: %v", err)
-		}
-	} else {
-		fmt.Println("File exists and already contains data.")
-	}
 
 	var tasks []Task
 
@@ -50,4 +29,37 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
 	}
+}
+
+func handleFileOpening(path string) (*os.File, error) {
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open or create file: %w", err)
+	}
+
+	stats, err := file.Stat()
+	if err != nil {
+		file.Close()
+		return nil, fmt.Errorf("failed to get file stats: %w", err)
+	}
+
+	if stats.Size() == 0 {
+		fmt.Println("File is empty or just created. Initializing with '[]'...")
+
+		_, err = file.WriteString("[]")
+		if err != nil {
+			file.Close()
+			return nil, fmt.Errorf("failed to write default JSON: %w", err)
+		}
+
+		_, err = file.Seek(0, 0)
+		if err != nil {
+			file.Close()
+			return nil, fmt.Errorf("failed to rewind file cursor: %w", err)
+		}
+	} else {
+		fmt.Println("File exists and already contains data.")
+	}
+
+	return file, nil
 }
