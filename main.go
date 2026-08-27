@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -28,7 +29,7 @@ func main() {
 	}
 
 	if stats.Size() == 0 {
-		fmt.Println("File is empty or just created. Initializing with '{}'...")
+		fmt.Println("File is empty or just created. Initializing with '[]'...")
 
 		_, err = file.WriteString("{}")
 		if err != nil {
@@ -41,5 +42,12 @@ func main() {
 		}
 	} else {
 		fmt.Println("File exists and already contains data.")
+	}
+
+	var tasks []Task
+
+	err = json.NewDecoder(file).Decode(&tasks)
+	if err != nil {
+		log.Fatalf("Error decoding JSON: %v", err)
 	}
 }
