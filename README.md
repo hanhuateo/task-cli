@@ -6,9 +6,13 @@
 2. open terminal
 3. cd into the cloned repository
 4. run `go install`
+
 5a. for mac users, run `echo 'export PATH=$PATH:$HOME/go/bin' >> ~/.zshrc && source ~/.zshrc` in terminal
+
 5b. for linux users, run `echo 'export PATH=$PATH:$HOME/go/bin' >> ~/.bashrc && source ~/.bashrc` in bash
+
 5c. for windows users, run `setx PATH "%PATH%;%USERPROFILE%\go\bin"` in command prompt
+
 6. re-open the terminal that you are using
 7. start using by typing `task-cli` 
 
