@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"time"
 )
 
 func main() {
@@ -28,6 +30,22 @@ func main() {
 	err = json.NewDecoder(file).Decode(&tasks)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
+	}
+
+	switch flag.Arg(0) {
+	case "add":
+		tasks = handleAddCommand(flag.Arg(1), tasks)
+		writeToFile(tasks, path)
+		// case "update":
+		// 	handleUpdateCommand(flag.Arg(1), flag.Arg(2))
+		// case "delete":
+		// 	handleDeleteCommand(flag.Arg(1))
+		// case "mark-in-progress":
+		// 	handleMarkInProgressCommand(flag.Arg(1))
+		// case "mark-done":
+		// 	handleMarkDoneCommand(flag.Arg(1))
+		// case "list":
+		// 	handleListCommand(flag.Arg(1))
 	}
 }
 
@@ -62,4 +80,34 @@ func handleFileOpening(path string) (*os.File, error) {
 	}
 
 	return file, nil
+}
+
+func handleAddCommand(description string, tasks []Task) []Task {
+	now := time.Now().Format(time.DateTime)
+
+	task := Task{
+		Id:          strconv.Itoa(len(tasks) + 1),
+		Description: description,
+		Status:      "todo",
+		CreatedAt:   now,
+		UpdatedAt:   now,
+	}
+
+	return append(tasks, task)
+}
+
+func writeToFile(tasks []Task, path string) {
+	jsonBytes, err := json.MarshalIndent(tasks, "", "	")
+	if err != nil {
+		fmt.Printf("Error marshaling to JSON: %v\n", err)
+		return
+	}
+
+	err = os.WriteFile(path, jsonBytes, 0644)
+	if err != nil {
+		fmt.Printf("Error writing to file: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Successfully saved data to %s\n", path)
 }
