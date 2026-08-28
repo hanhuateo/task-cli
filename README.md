@@ -1,8 +1,7 @@
 # task-cli
 
 - ensure that go 1.26.6 or later is installed
-
-- [project url](https://github.com/hanhuateo/task-cli)
+- [project url](https://roadmap.sh/projects/task-tracker)
 
 1. clone the repository into your desired folder
 2. open terminal
