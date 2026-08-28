@@ -38,8 +38,8 @@ func main() {
 		handleAddCommand(flag.Arg(1), tasks, path)
 	case "update":
 		handleUpdateCommand(flag.Arg(1), flag.Arg(2), tasks, path)
-		// case "delete":
-		// 	handleDeleteCommand(flag.Arg(1))
+	case "delete":
+		handleDeleteCommand(flag.Arg(1), tasks, path)
 		// case "mark-in-progress":
 		// 	handleMarkInProgressCommand(flag.Arg(1))
 		// case "mark-done":
@@ -125,15 +125,7 @@ func handleUpdateCommand(id string, description string, tasks []Task, path strin
 		return
 	}
 
-	idInt, err := strconv.Atoi(id)
-	if err != nil {
-		fmt.Println("Error during conversion:", err)
-		return
-	}
-
-	exists := slices.ContainsFunc(tasks, func(t Task) bool {
-		return t.Id == idInt
-	})
+	exists, idInt := checkIfIdExists(id, tasks)
 
 	if !exists {
 		fmt.Println("Id does not exist")
@@ -146,5 +138,41 @@ func handleUpdateCommand(id string, description string, tasks []Task, path strin
 
 	tasks[index].Description = description
 
+	now := time.Now().Format(time.DateTime)
+	tasks[index].UpdatedAt = now
+
 	writeToFile(tasks, path)
+}
+
+func handleDeleteCommand(id string, tasks []Task, path string) {
+
+	if id == "" {
+		fmt.Println("Please enter the id to be deleted")
+		return
+	}
+
+	exists, idInt := checkIfIdExists(id, tasks)
+
+	if !exists {
+		fmt.Println("Id does not exist")
+		return
+	}
+
+	tasks = slices.DeleteFunc(tasks, func(t Task) bool {
+		return t.Id == idInt
+	})
+
+	writeToFile(tasks, path)
+}
+
+func checkIfIdExists(id string, tasks []Task) (bool, int) {
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		fmt.Println("Error during conversion:", err)
+		return false, -1
+	}
+
+	return slices.ContainsFunc(tasks, func(t Task) bool {
+		return t.Id == idInt
+	}), idInt
 }
