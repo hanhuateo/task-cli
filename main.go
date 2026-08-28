@@ -40,10 +40,10 @@ func main() {
 		handleUpdateCommand(flag.Arg(1), flag.Arg(2), tasks, path)
 	case "delete":
 		handleDeleteCommand(flag.Arg(1), tasks, path)
-		// case "mark-in-progress":
-		// 	handleMarkInProgressCommand(flag.Arg(1))
-		// case "mark-done":
-		// 	handleMarkDoneCommand(flag.Arg(1))
+	case "mark-in-progress":
+		handleMarkInProgressCommand(flag.Arg(1), tasks, path)
+	case "mark-done":
+		handleMarkDoneCommand(flag.Arg(1), tasks, path)
 		// case "list":
 		// 	handleListCommand(flag.Arg(1))
 	}
@@ -137,10 +137,7 @@ func handleUpdateCommand(id string, description string, tasks []Task, path strin
 	})
 
 	tasks[index].Description = description
-
-	now := time.Now().Format(time.DateTime)
-	tasks[index].UpdatedAt = now
-
+	updateUpdatedAt(tasks, index)
 	writeToFile(tasks, path)
 }
 
@@ -175,4 +172,54 @@ func checkIfIdExists(id string, tasks []Task) (bool, int) {
 	return slices.ContainsFunc(tasks, func(t Task) bool {
 		return t.Id == idInt
 	}), idInt
+}
+
+func handleMarkInProgressCommand(id string, tasks []Task, path string) {
+
+	if id == "" {
+		fmt.Println("Please enter the id to be marked as in progress")
+		return
+	}
+
+	exists, idInt := checkIfIdExists(id, tasks)
+
+	if !exists {
+		fmt.Println("Id does not exist")
+		return
+	}
+
+	index := slices.IndexFunc(tasks, func(t Task) bool {
+		return t.Id == idInt
+	})
+
+	tasks[index].Status = "in-progress"
+	updateUpdatedAt(tasks, index)
+	writeToFile(tasks, path)
+}
+
+func handleMarkDoneCommand(id string, tasks []Task, path string) {
+	if id == "" {
+		fmt.Println("Please enter the id to be marked as done")
+		return
+	}
+
+	exists, idInt := checkIfIdExists(id, tasks)
+
+	if !exists {
+		fmt.Println("Id does not exist")
+		return
+	}
+
+	index := slices.IndexFunc(tasks, func(t Task) bool {
+		return t.Id == idInt
+	})
+
+	tasks[index].Status = "done"
+	updateUpdatedAt(tasks, index)
+	writeToFile(tasks, path)
+}
+
+func updateUpdatedAt(tasks []Task, index int) {
+	now := time.Now().Format(time.DateTime)
+	tasks[index].UpdatedAt = now
 }
