@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strconv"
 	"time"
 )
@@ -35,8 +36,8 @@ func main() {
 	switch flag.Arg(0) {
 	case "add":
 		handleAddCommand(flag.Arg(1), tasks, path)
-		// case "update":
-		// 	handleUpdateCommand(flag.Arg(1), flag.Arg(2))
+	case "update":
+		handleUpdateCommand(flag.Arg(1), flag.Arg(2), tasks, path)
 		// case "delete":
 		// 	handleDeleteCommand(flag.Arg(1))
 		// case "mark-in-progress":
@@ -91,7 +92,7 @@ func handleAddCommand(description string, tasks []Task, path string) {
 	now := time.Now().Format(time.DateTime)
 	id := len(tasks) + 1
 	task := Task{
-		Id:          strconv.Itoa(id),
+		Id:          id,
 		Description: description,
 		Status:      "todo",
 		CreatedAt:   now,
@@ -115,4 +116,35 @@ func writeToFile(tasks []Task, path string) {
 		fmt.Printf("Error writing to file: %v\n", err)
 		return
 	}
+}
+
+func handleUpdateCommand(id string, description string, tasks []Task, path string) {
+
+	if id == "" || description == "" {
+		fmt.Println("Please ensure that both the Id to be updated and new description is present")
+		return
+	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		fmt.Println("Error during conversion:", err)
+		return
+	}
+
+	exists := slices.ContainsFunc(tasks, func(t Task) bool {
+		return t.Id == idInt
+	})
+
+	if !exists {
+		fmt.Println("Id does not exist")
+		return
+	}
+
+	index := slices.IndexFunc(tasks, func(t Task) bool {
+		return t.Id == idInt
+	})
+
+	tasks[index].Description = description
+
+	writeToFile(tasks, path)
 }
