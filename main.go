@@ -82,6 +82,12 @@ func handleFileOpening(path string) (*os.File, error) {
 }
 
 func handleAddCommand(description string, tasks []Task, path string) {
+
+	if description == "" {
+		fmt.Println("Please enter the description for the task to be added.")
+		return
+	}
+
 	now := time.Now().Format(time.DateTime)
 	id := len(tasks) + 1
 	task := Task{
