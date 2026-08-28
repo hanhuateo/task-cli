@@ -34,8 +34,7 @@ func main() {
 
 	switch flag.Arg(0) {
 	case "add":
-		tasks = handleAddCommand(flag.Arg(1), tasks)
-		writeToFile(tasks, path)
+		handleAddCommand(flag.Arg(1), tasks, path)
 		// case "update":
 		// 	handleUpdateCommand(flag.Arg(1), flag.Arg(2))
 		// case "delete":
@@ -82,18 +81,20 @@ func handleFileOpening(path string) (*os.File, error) {
 	return file, nil
 }
 
-func handleAddCommand(description string, tasks []Task) []Task {
+func handleAddCommand(description string, tasks []Task, path string) {
 	now := time.Now().Format(time.DateTime)
-
+	id := len(tasks) + 1
 	task := Task{
-		Id:          strconv.Itoa(len(tasks) + 1),
+		Id:          strconv.Itoa(id),
 		Description: description,
 		Status:      "todo",
 		CreatedAt:   now,
 		UpdatedAt:   now,
 	}
 
-	return append(tasks, task)
+	tasks = append(tasks, task)
+	writeToFile(tasks, path)
+	fmt.Printf("Task added successfully (ID: %d)\n", id)
 }
 
 func writeToFile(tasks []Task, path string) {
@@ -108,6 +109,4 @@ func writeToFile(tasks []Task, path string) {
 		fmt.Printf("Error writing to file: %v\n", err)
 		return
 	}
-
-	fmt.Printf("Successfully saved data to %s\n", path)
 }
