@@ -44,8 +44,8 @@ func main() {
 		handleMarkInProgressCommand(flag.Arg(1), tasks, path)
 	case "mark-done":
 		handleMarkDoneCommand(flag.Arg(1), tasks, path)
-		// case "list":
-		// 	handleListCommand(flag.Arg(1))
+	case "list":
+		handleListCommand(flag.Arg(1), tasks)
 	}
 }
 
@@ -230,4 +230,17 @@ func handleMarkDoneCommand(id string, tasks []Task, path string) {
 func updateUpdatedAt(tasks []Task, index int) {
 	now := time.Now().Format(time.DateTime)
 	tasks[index].UpdatedAt = now
+}
+
+func handleListCommand(status string, tasks []Task) {
+	for i := range tasks {
+		if tasks[i].Status == status || status == "" {
+			prettyJSON, err := json.MarshalIndent(tasks[i], "", "	")
+			if err != nil {
+				fmt.Println("Error generating pretty JSON:", err)
+				return
+			}
+			fmt.Println(string(prettyJSON))
+		}
+	}
 }
