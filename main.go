@@ -164,7 +164,7 @@ func handleDeleteCommand(id string, tasks []Task, path string) {
 }
 
 func updateId(tasks []Task) []Task {
-	for i := 0; i < len(tasks); i++ {
+	for i := range tasks {
 		tasks[i].Id = i + 1
 	}
 	return tasks
