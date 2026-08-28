@@ -159,7 +159,15 @@ func handleDeleteCommand(id string, tasks []Task, path string) {
 		return t.Id == idInt
 	})
 
+	tasks = updateId(tasks)
 	writeToFile(tasks, path)
+}
+
+func updateId(tasks []Task) []Task {
+	for i := 0; i < len(tasks); i++ {
+		tasks[i].Id = i + 1
+	}
+	return tasks
 }
 
 func checkIfIdExists(id string, tasks []Task) (bool, int) {
